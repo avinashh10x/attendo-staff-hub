@@ -357,7 +357,11 @@ const ReportsPage = () => {
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
                       <YAxis domain={[0, 100]} />
-                      <Tooltip formatter={(value) => [`${value.toFixed(1)}%`, "Attendance Rate"]} />
+                      <Tooltip formatter={(value) => {
+                        return typeof value === 'number' 
+                          ? [`${value.toFixed(1)}%`, "Attendance Rate"]
+                          : [value, "Attendance Rate"];
+                      }} />
                       <Bar dataKey="attendanceRate" fill="#3b82f6" name="Attendance Rate (%)" />
                     </BarChart>
                   </ResponsiveContainer>
