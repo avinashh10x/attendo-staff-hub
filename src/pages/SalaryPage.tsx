@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { PageLayout } from "@/components/PageLayout";
 import { useData } from "@/context/DataContext";
@@ -47,7 +46,16 @@ import {
   User
 } from "lucide-react";
 import { toast } from "sonner";
-import { ResponsiveBar } from "@nivo/bar";
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer 
+} from "recharts";
 
 interface SalaryDetailDialogProps {
   record: SalaryRecord;
@@ -281,7 +289,6 @@ const SalaryPage = () => {
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   
-  // Filter salary records
   const filteredRecords = salaryRecords.filter((record) => {
     const matchesMonth = selectedMonth === "all" || record.month === selectedMonth;
     const matchesStatus = selectedStatus === "all" || record.status === selectedStatus;
@@ -297,18 +304,15 @@ const SalaryPage = () => {
     return matchesMonth && matchesStatus && matchesSearch;
   });
   
-  // Sort records by amount
   const sortedRecords = [...filteredRecords].sort((a, b) => {
     return sortOrder === "asc" ? a.totalSalary - b.totalSalary : b.totalSalary - a.totalSalary;
   });
   
-  // Get employee name by ID
   const getEmployeeName = (employeeId: string) => {
     const employee = employees.find(e => e.id === employeeId);
     return employee ? employee.name : "Unknown";
   };
   
-  // Prepare chart data
   const chartData = selectedMonth === "all" 
     ? [] 
     : employees.slice(0, 10).map(emp => {
@@ -322,12 +326,10 @@ const SalaryPage = () => {
         };
       });
   
-  // Calculate stats
   const totalPending = filteredRecords.filter(r => r.status === "pending").reduce((acc, r) => acc + r.totalSalary, 0);
   const totalPaid = filteredRecords.filter(r => r.status === "paid").reduce((acc, r) => acc + r.totalSalary, 0);
   const averageSalary = filteredRecords.length > 0 ? filteredRecords.reduce((acc, r) => acc + r.totalSalary, 0) / filteredRecords.length : 0;
   
-  // Handle status update
   const handleSalaryUpdate = async (id: string, data: Partial<SalaryRecord>) => {
     try {
       await updateSalaryRecord(id, data);
@@ -404,49 +406,19 @@ const SalaryPage = () => {
             <CardContent>
               <div className="h-[300px]">
                 {chartData.length > 0 ? (
-                  <ResponsiveBar
-                    data={chartData}
-                    keys={["baseSalary", "overtime", "bonus", "deductions"]}
-                    indexBy="employee"
-                    margin={{ top: 10, right: 130, bottom: 50, left: 60 }}
-                    padding={0.3}
-                    valueScale={{ type: "linear" }}
-                    indexScale={{ type: "band", round: true }}
-                    colors={{ scheme: "nivo" }}
-                    borderColor={{ from: "color", modifiers: [["darker", 1.6]] }}
-                    axisBottom={{
-                      tickSize: 5,
-                      tickPadding: 5,
-                      tickRotation: 0,
-                      legend: "Employee",
-                      legendPosition: "middle",
-                      legendOffset: 32,
-                    }}
-                    axisLeft={{
-                      tickSize: 5,
-                      tickPadding: 5,
-                      tickRotation: 0,
-                      legend: "Amount ($)",
-                      legendPosition: "middle",
-                      legendOffset: -40,
-                    }}
-                    legends={[
-                      {
-                        dataFrom: "keys",
-                        anchor: "bottom-right",
-                        direction: "column",
-                        justify: false,
-                        translateX: 120,
-                        translateY: 0,
-                        itemsSpacing: 2,
-                        itemWidth: 100,
-                        itemHeight: 20,
-                        itemDirection: "left-to-right",
-                        itemOpacity: 0.85,
-                        symbolSize: 20,
-                      },
-                    ]}
-                  />
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="employee" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="baseSalary" stackId="a" fill="#3b82f6" name="Base Salary" />
+                      <Bar dataKey="overtime" stackId="a" fill="#10b981" name="Overtime" />
+                      <Bar dataKey="bonus" stackId="a" fill="#f59e0b" name="Bonus" />
+                      <Bar dataKey="deductions" stackId="a" fill="#ef4444" name="Deductions" />
+                    </BarChart>
+                  </ResponsiveContainer>
                 ) : (
                   <div className="h-full flex items-center justify-center">
                     <p className="text-gray-500">Select a specific month to view salary distribution</p>
@@ -596,7 +568,6 @@ const SalaryPage = () => {
         </Card>
       </div>
 
-      {/* Salary Detail Dialog */}
       {selectedRecord && (
         <SalaryDetailDialog
           record={selectedRecord}

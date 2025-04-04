@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { PageLayout } from "@/components/PageLayout";
 import { useData } from "@/context/DataContext";
@@ -56,12 +55,10 @@ const COLORS = ["#3b82f6", "#ef4444", "#f59e0b", "#10b981", "#6366f1", "#ec4899"
 const ReportsPage = () => {
   const { employees, attendance, attendanceStats, departments } = useData();
   
-  // Report options
   const [reportType, setReportType] = useState<string>("attendance");
   const [period, setPeriod] = useState<string>("weekly");
   const [department, setDepartment] = useState<string>("all");
   
-  // Export options
   const [exportPeriod, setExportPeriod] = useState<string>("weekly");
   const [exportStartDate, setExportStartDate] = useState<string>(
     new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
@@ -71,10 +68,8 @@ const ReportsPage = () => {
   );
   const [exportEmployeeFilter, setExportEmployeeFilter] = useState<string>("all");
   
-  // Get attendance trend data
   const attendanceTrendData = attendanceStats.slice(0, period === "weekly" ? 7 : 30).reverse();
   
-  // Calculate department attendance stats
   const departmentStats = departments.map(dept => {
     const deptEmployees = employees.filter(e => e.department === dept.name && e.status === "active");
     const deptEmployeeIds = deptEmployees.map(e => e.id);
@@ -101,7 +96,6 @@ const ReportsPage = () => {
     };
   });
   
-  // Calculate working hours by department
   const workingHoursByDept = departments.map(dept => {
     const deptEmployees = employees.filter(e => e.department === dept.name);
     const deptEmployeeIds = deptEmployees.map(e => e.id);
@@ -138,7 +132,6 @@ const ReportsPage = () => {
     };
   });
   
-  // Calculate attendance status distribution
   const statusDistribution = [
     { name: "Present", value: attendanceStats.reduce((sum, day) => sum + day.present, 0) },
     { name: "Absent", value: attendanceStats.reduce((sum, day) => sum + day.absent, 0) },
@@ -146,7 +139,6 @@ const ReportsPage = () => {
     { name: "On Leave", value: attendanceStats.reduce((sum, day) => sum + day.onLeave, 0) },
   ];
   
-  // Export attendance data
   const handleExport = () => {
     try {
       const options = {
@@ -235,7 +227,6 @@ const ReportsPage = () => {
         </CardContent>
       </Card>
       
-      {/* Report content based on selected type */}
       <div className="space-y-6">
         {reportType === "attendance" && (
           <>
@@ -427,7 +418,7 @@ const ReportsPage = () => {
                             <td className="p-3">{dept.present}</td>
                             <td className="p-3">{dept.absent}</td>
                             <td className="p-3">{dept.late}</td>
-                            <td className="p-3">{onTimePercentage}%</td>
+                            <td className="p-3">{String(onTimePercentage)}%</td>
                             <td className="p-3">{workingHours?.totalHours || "0"}</td>
                           </tr>
                         );
@@ -553,7 +544,6 @@ const ReportsPage = () => {
         )}
       </div>
       
-      {/* Report Export Configuration */}
       <Card className="mt-8">
         <CardHeader>
           <CardTitle>Export Reports</CardTitle>
