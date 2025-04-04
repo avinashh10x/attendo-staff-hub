@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Custom colors for our attendance app
+				attendoBlue: '#3b82f6',
+				attendoSlate: '#64748b',
+				attendoSky: '#0ea5e9',
+				attendoLight: '#f8fafc',
+				attendoDark: '#1e293b',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
